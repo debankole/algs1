@@ -1,0 +1,1 @@
+javac -cp "D:\code\algs\algs1\libs\algs4.jar;/edu/princeton/cs/algs4" Percolation.java
