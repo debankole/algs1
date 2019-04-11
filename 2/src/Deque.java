@@ -1,4 +1,3 @@
-import java.lang.annotation.Retention;
 import java.util.Iterator;
 
 import edu.princeton.cs.algs4.Out;
@@ -6,15 +5,15 @@ import edu.princeton.cs.algs4.StdOut;
 
 public class Deque<Item> implements Iterable<Item> {
 
-	class Node {
+	private class Node {
 		Node next;
 		Node prev;
 		Item item;
 	}
 
-	Node head;
-	Node tail;
-	int size = 0;
+	private Node head;
+	private Node tail;
+	private int size = 0;
 
 	public Deque() { // construct an empty deque
 
@@ -116,7 +115,7 @@ public class Deque<Item> implements Iterable<Item> {
 		return new Iter();
 	}
 	
-	class Iter implements Iterator<Item>{
+	private class Iter implements Iterator<Item>{
 
 		Node curr = head;
 		
