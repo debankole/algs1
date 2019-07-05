@@ -1,8 +1,5 @@
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedList;
-
-import com.sun.istack.internal.Nullable;
 
 public class FastCollinearPoints {
 	private Point[] points;
@@ -13,16 +10,27 @@ public class FastCollinearPoints {
 			throw new IllegalArgumentException();
 		}
 
+		checkNull(points);
+		Point[] cloned = points.clone();
+		checkDuplicate(cloned);
+
 		this.points = points;
 
 		findSegments();
 	}
 
+	private boolean isSorted(Point[] a) {
+		for (int i = 0; i < a.length - 1; i++) {
+			if (a[i].compareTo(a[i + 1]) > 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	private void findSegments() {
 		this.segments = new LineSegment[0];
 		LinkedList<LineSegment> s = new LinkedList<LineSegment>();
-
-		HashSet<String> processed = new HashSet<String>();
 
 		for (int i1 = 0; i1 < this.points.length; i1++) {
 			double lastSlope = 0;
@@ -36,25 +44,36 @@ public class FastCollinearPoints {
 
 				double currentSlope = pnt.slopeTo(tempArray[i2]);
 
-				if (currentSlope == lastSlope && i2 != tempArray.length - 1) {
+				if (currentSlope == lastSlope) {
 					sameSlopeCount++;
-				} else {
+				}
+
+				if (currentSlope != lastSlope || i2 == tempArray.length - 1) {
 					lastSlope = currentSlope;
 
 					if (sameSlopeCount >= 3) {
 						Point[] a = new Point[sameSlopeCount + 1];
 						a[0] = pnt;
+
+						boolean stop = false;
 						for (int i = 1; i <= sameSlopeCount; i++) {
 							a[i] = tempArray[i2 - i];
+							if (pnt.compareTo(a[i]) > 0) {
+								stop = true;
+								break;
+							}
+						}
+
+						if (stop) {
+							sameSlopeCount = 1;
+							continue;
 						}
 
 						Arrays.sort(a);
 						LineSegment segment = new LineSegment(a[0], a[a.length - 1]);
 
-						if (!processed.contains(segment.toString())) {
-							s.add(segment);
-							processed.add(segment.toString());
-						}
+						s.add(segment);
+
 					}
 
 					sameSlopeCount = 1;
@@ -62,7 +81,36 @@ public class FastCollinearPoints {
 			}
 		}
 
+//		LinkedList<LineSegment> s1 = new LinkedList<LineSegment>();
+//		LinkedList<String> processed = new LinkedList<String>();
+//
+//		for (LineSegment l : s) {
+//			String t = l.toString();
+//			if (!processed.contains(t)) {
+//				s1.add(l);
+//				processed.add(t);
+//			}
+//		}
+
 		this.segments = s.toArray(this.segments);
+	}
+
+	private void checkNull(Point[] p) {
+		for (Point pi : p) {
+			if (pi == null) {
+				throw new NullPointerException();
+			}
+		}
+	}
+
+	private void checkDuplicate(Point[] p) {
+
+		Arrays.sort(p);
+		for (int i = 0; i < p.length - 1; i++) {
+			if (p[i].compareTo(p[i + 1]) == 0) {
+				throw new IllegalArgumentException();
+			}
+		}
 	}
 
 	public int numberOfSegments() { // the number of line segments
@@ -70,6 +118,6 @@ public class FastCollinearPoints {
 	}
 
 	public LineSegment[] segments() { // the line segments
-		return this.segments;
+		return Arrays.copyOf(this.segments, numberOfSegments());
 	}
 }

@@ -67,7 +67,12 @@ public class Point implements Comparable<Point> {
 			return Double.POSITIVE_INFINITY;
 		}
 
-		return ((double)(that.y - this.y)) / (that.x - this.x);
+		int ydif = that.y - this.y;
+
+		if (ydif == 0)
+			return 0;
+
+		return ((double) (that.y - this.y)) / (that.x - this.x);
 	}
 
 	/**
@@ -124,7 +129,7 @@ public class Point implements Comparable<Point> {
 		/* YOUR CODE HERE */
 	}
 
-	class PointComparator implements Comparator<Point> {
+	private class PointComparator implements Comparator<Point> {
 
 		@Override
 		public int compare(Point o1, Point o2) {
